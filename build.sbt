@@ -2,7 +2,7 @@ lazy val commonSettings = Seq(
   organizationName := "foerster technologies",
   organization := "com.foerster-technologies",
   name := "slick-mysql",
-  version := "0.0.1",
+  version := "0.0.1-SNAPSHOT",
 
   scalaVersion := "2.12.7",
   crossScalaVersions := Seq("2.12.7", "2.11.12"),
