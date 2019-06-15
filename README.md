@@ -55,7 +55,7 @@ Gps example with JTS
 ```
 import your.package.MySQLSpatialProfile
 import play.api.db.slick.HasDatabaseConfigProvider
-import com.vividsolutions.jts.geom.Point
+import org.locationtech.jts.geom.Point
 
 case class Test(id : Long, gps : Point)
 

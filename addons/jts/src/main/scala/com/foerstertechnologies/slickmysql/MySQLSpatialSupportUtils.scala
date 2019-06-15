@@ -1,7 +1,9 @@
 package com.foerstertechnologies.slickmysql
 
-import com.vividsolutions.jts.geom.Geometry
-import com.vividsolutions.jts.io.{WKBReader, WKBWriter, WKTReader, WKTWriter}
+import java.nio.ByteBuffer
+
+import org.locationtech.jts.geom.{Geometry, GeometryFactory, Point, PrecisionModel}
+import org.locationtech.jts.io.{ByteOrderValues, WKBReader, WKBWriter, WKTReader, WKTWriter}
 
 
 object MySQLSpatialSupportUtils {
@@ -19,7 +21,7 @@ object MySQLSpatialSupportUtils {
   def fromLiteral[T](value: String): T = {
     if (wktReaderHolder.get == null) wktReaderHolder.set(new WKTReader())
     splitRSIDAndWKT(value) match {
-      case (srid, wkt) => {
+      case (srid, wkt) =>
         val geom =
           if (wkt.startsWith("00") || wkt.startsWith("01"))
             fromBytes(WKBReader.hexToBytes(wkt))
@@ -27,13 +29,15 @@ object MySQLSpatialSupportUtils {
 
         if (srid != -1) geom.setSRID(srid)
         geom.asInstanceOf[T]
-      }
+
     }
   }
 
   def fromBytes[T](bytes: Array[Byte]): T = {
-    if (wkbReaderHolder.get == null) wkbReaderHolder.set(new WKBReader())
-    wkbReaderHolder.get.read(bytes).asInstanceOf[T]
+    // MySQL stores geometry values using 4 bytes to indicate the SRID followed by the WKB representation of the value.
+    // https://dev.mysql.com/doc/refman/8.0/en/storage-requirements.html
+    if (wkbReaderHolder.get == null) wkbReaderHolder.set(new WKBReader(new GeometryFactory(new PrecisionModel, ByteBuffer.wrap(bytes.take(4)).getInt)))
+    wkbReaderHolder.get.read(bytes.drop(4)).asInstanceOf[T]
   }
 
   private def splitRSIDAndWKT(value: String): (Int, String) = {
@@ -49,13 +53,42 @@ object MySQLSpatialSupportUtils {
     } else (-1, value)
   }
 
-  def toBytes(geom: Geometry): Array[Byte] = {
-    if (geom != null && geom.getCoordinate != null && !(java.lang.Double.isNaN(geom.getCoordinate.z))) {
-      if (wkb3DWriterHolder.get == null) wkb3DWriterHolder.set(new WKBWriter(3, true))
-      wkb3DWriterHolder.get.write(geom)
+  def toBytes[T <: Geometry](geom: T): Array[Byte] = {
+
+    var writer: WKBWriter = null
+
+    if (geom != null && geom.getCoordinate != null && !java.lang.Double.isNaN(geom.getCoordinate.getZ)) {
+      if (wkb3DWriterHolder.get == null) wkb3DWriterHolder.set(new WKBWriter(3, ByteOrderValues.LITTLE_ENDIAN, false))
+      writer = wkbWriterHolder.get
     } else {
-      if (wkbWriterHolder.get == null) wkbWriterHolder.set(new WKBWriter(2, true))
-      wkbWriterHolder.get.write(geom)
+      if (wkbWriterHolder.get == null) wkbWriterHolder.set(new WKBWriter(2, ByteOrderValues.LITTLE_ENDIAN, false))
+      writer = wkbWriterHolder.get
     }
+
+    val wkbValue = writer.write(geom)
+
+    val srid = geom.getSRID
+    val sridByte = Array(srid.toByte, (srid >>> 8).toByte, (srid >>> 16).toByte, (srid >>> 24).toByte)
+
+    // MySQL stores the srid with the wkb value in little endian.
+    // Enabling the WKBWriter with `inclineSrid` resolves in incorrect data.
+    sridByte ++ wkbValue
+  }
+
+  def toWkt(geom: Geometry): String = {
+    new WKTWriter().write(geom)
+  }
+
+  /**
+    * Helper method for debugging porpuse
+    * @param bytes array that will be printed
+    * @return bytes as hex representation
+    */
+  def convertBytesToHex(bytes: Seq[Byte]): String = {
+    val sb = new StringBuilder
+    for (b <- bytes) {
+      sb.append(String.format("%02x", Byte.box(b)))
+    }
+    sb.toString
   }
 }

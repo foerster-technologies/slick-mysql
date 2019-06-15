@@ -3,7 +3,7 @@ package com.foerstertechnologies.slickmysql
 import java.sql.{PreparedStatement, ResultSet}
 
 import com.foerstertechnologies.slickmysql.spatial._
-import com.vividsolutions.jts.geom._
+import org.locationtech.jts.geom._
 import slick.ast.FieldSymbol
 import slick.jdbc._
 
@@ -67,9 +67,11 @@ trait MySQLSpatialSupport extends MySQLSpatialExtension {
     }
 
     ///
-    private def setGeometry[T <: Geometry](v: Option[T], p: PositionedParameters) = v match {
-      case Some(v) => p.setBytes(toBytes(v))
-      case None => p.setNull(java.sql.Types.OTHER)
+    private def setGeometry[T <: Geometry](maybeGeo: Option[T], p: PositionedParameters) = {
+      maybeGeo match {
+        case Some(v) => p.setBytes(toBytes(v))
+        case None => p.setNull(java.sql.Types.OTHER)
+      }
     }
   }
 
@@ -86,18 +88,23 @@ trait MySQLSpatialSupport extends MySQLSpatialExtension {
 
       val geoInWkb = r.getBytes(idx)
       if (r.wasNull()) null.asInstanceOf[T]
-      // MySQL stores geometry values using 4 bytes to indicate the SRID followed by the WKB representation of the value.
-      // https://dev.mysql.com/doc/refman/8.0/en/storage-requirements.html
-      else fromBytes(geoInWkb.drop(4))
+      else fromBytes(geoInWkb)
     }
 
-    override def setValue(v: T, p: PreparedStatement, idx: Int): Unit = p.setBytes(idx, toBytes(v))
+    override def setValue(v: T, p: PreparedStatement, idx: Int): Unit = {
+      p.setBytes(idx,toBytes(v))
+    }
 
-    override def updateValue(v: T, r: ResultSet, idx: Int): Unit = r.updateBytes(idx, toBytes(v))
+    override def updateValue(v: T, r: ResultSet, idx: Int): Unit = {
+      r.updateBytes(idx, toBytes(v))
+    }
 
-    override def hasLiteralForm: Boolean = false
+    override def hasLiteralForm: Boolean = true
 
-    override def valueToSQLLiteral(v: T) = if (v eq null) "NULL" else s"'${toLiteral(v)}'"
+    override def valueToSQLLiteral(v: T) = {
+      if (v eq null) "NULL" else s"'${toLiteral(v)}'"
+
+    }
   }
 
 }

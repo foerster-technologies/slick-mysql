@@ -2,10 +2,10 @@ lazy val commonSettings = Seq(
   organizationName := "foerster technologies",
   organization := "com.foerster-technologies",
   name := "slick-mysql",
-  version := "0.0.1-SNAPSHOT",
+  version := "0.1.0",
 
-  scalaVersion := "2.12.7",
-  crossScalaVersions := Seq("2.12.7", "2.11.12"),
+  scalaVersion := "2.12.8",
+  crossScalaVersions := Seq("2.12.8", "2.11.12"),
   scalacOptions ++= Seq("-deprecation",
     "-feature",
     "-language:implicitConversions",
@@ -60,8 +60,8 @@ def mainDependencies(scalaVersion: String) = {
   }
   Seq (
     "org.scala-lang" % "scala-reflect" % scalaVersion,
-    "com.typesafe.slick" %% "slick" % "3.2.3",
-    "org.slf4j" % "slf4j-simple" % "1.7.24" % "provided",
+    "com.typesafe.slick" %% "slick" % "3.3.1",
+    "org.slf4j" % "slf4j-simple" % "1.7.26" % "provided",
     "org.scalatest" %% "scalatest" % "3.0.4" % "test"
   ) ++ extractedLibs
 }
@@ -88,7 +88,7 @@ lazy val slickMySQLJts = Project(id = "slick-mysql_jts", base = file("./addons/j
     name := "slick-mysql_jts",
     description := "Slick extensions for MySQL - jts module",
     libraryDependencies := mainDependencies(scalaVersion.value) ++ Seq(
-      "com.vividsolutions" % "jts-core" % "1.14.0"
+      "org.locationtech.jts" % "jts-core" % "1.16.1"
     )
   )
 ).dependsOn (slickMySQLCore)
