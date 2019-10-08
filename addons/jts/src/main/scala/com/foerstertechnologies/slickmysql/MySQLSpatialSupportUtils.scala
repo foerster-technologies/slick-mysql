@@ -15,10 +15,12 @@ object MySQLSpatialSupportUtils {
 
   def toLiteral(geom: Geometry): String = {
     if (wktWriterHolder.get == null) wktWriterHolder.set(new WKTWriter())
-    wktWriterHolder.get.write(geom)
+    val lit = wktWriterHolder.get.write(geom)
+    lit
   }
 
   def fromLiteral[T](value: String): T = {
+
     if (wktReaderHolder.get == null) wktReaderHolder.set(new WKTReader())
     splitRSIDAndWKT(value) match {
       case (srid, wkt) =>

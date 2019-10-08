@@ -27,28 +27,6 @@ trait MySQLSpatialExtension extends JdbcTypesComponent {
         case None => om.column(GeomLibrary.GeomFromWKB, wkb.toNode)
       }
 
-    def geomFromEWKT[P, R](ewkt: Rep[P])(
-      implicit tm: JdbcType[GEOMETRY], om: OptionMapperDSL.arg[String, P]#to[GEOMETRY, R]) = {
-      om.column(GeomLibrary.GeomFromEWKT, ewkt.toNode)
-    }
-
-    def geomFromEWKB[P, R](ewkb: Rep[P])(
-      implicit tm: JdbcType[GEOMETRY], om: OptionMapperDSL.arg[Array[Byte], P]#to[GEOMETRY, R]) = {
-      om.column(GeomLibrary.GeomFromEWKB, ewkb.toNode)
-    }
-
-    def geomFromGML[P, R](gml: Rep[P], srid: Option[Int] = None)(
-      implicit tm: JdbcType[GEOMETRY], om: OptionMapperDSL.arg[String, P]#to[GEOMETRY, R]) =
-      srid match {
-        case Some(srid) => om.column(GeomLibrary.GeomFromGML, gml.toNode, LiteralNode(srid))
-        case None => om.column(GeomLibrary.GeomFromGML, gml.toNode)
-      }
-
-    def geomFromKML[P, R](kml: Rep[P])(
-      implicit tm: JdbcType[GEOMETRY], om: OptionMapperDSL.arg[String, P]#to[GEOMETRY, R]) = {
-      om.column(GeomLibrary.GeomFromKML, kml.toNode)
-    }
-
     def geomFromGeoJSON[P, R](json: Rep[P])(
       implicit tm: JdbcType[GEOMETRY], om: OptionMapperDSL.arg[String, P]#to[GEOMETRY, R]) = {
       om.column(GeomLibrary.GeomFromGeoJSON, json.toNode)
@@ -447,20 +425,6 @@ trait MySQLSpatialExtension extends JdbcTypesComponent {
       om.column(GeomLibrary.DistanceSphere, n, geom.toNode)
     }
 
-    @deprecated(message = "Use to access old `ST_Distance_Sphere` function", since = "0.15")
-    def distanceSphere0[P2, R](geom: Rep[P2])(implicit om: o#to[Float, R]) = {
-      om.column(GeomLibrary.DistanceSphere0, n, geom.toNode)
-    }
-
-    def distanceSpheroid[P2, R](geom: Rep[P2])(implicit om: o#to[Float, R]) = {
-      om.column(GeomLibrary.DistanceSpheroid, n, geom.toNode)
-    }
-
-    @deprecated(message = "Use to access old `ST_Distance_Spheroid` function", since = "0.15")
-    def distanceSpheroid0[P2, R](geom: Rep[P2])(implicit om: o#to[Float, R]) = {
-      om.column(GeomLibrary.DistanceSpheroid0, n, geom.toNode)
-    }
-
     def maxDistance[P2, R](geom: Rep[P2])(implicit om: o#to[Float, R]) = {
       om.column(GeomLibrary.MaxDistance, n, geom.toNode)
     }
@@ -607,10 +571,6 @@ trait MySQLSpatialExtension extends JdbcTypesComponent {
     /** Geometry Constructors */
     val GeomFromText = new SqlFunction("ST_GeomFromText")
     val GeomFromWKB = new SqlFunction("ST_GeomFromWKB")
-    val GeomFromEWKT = new SqlFunction("ST_GeomFromEWKT")
-    val GeomFromEWKB = new SqlFunction("ST_GeomFromEWKB")
-    val GeomFromGML = new SqlFunction("ST_GeomFromGML")
-    val GeomFromKML = new SqlFunction("ST_GeomFromKML")
     val GeomFromGeoJSON = new SqlFunction("ST_GeomFromGeoJSON")
     val LineFromEncodedPolyline = new SqlFunction("ST_LineFromEncodedPolyline")
     val MakeBox = new SqlFunction("ST_MakeBox2D")
@@ -690,10 +650,7 @@ trait MySQLSpatialExtension extends JdbcTypesComponent {
     val Length3D = new SqlFunction("ST_3DLength")
     val Perimeter = new SqlFunction("ST_Perimeter")
     val Distance = new SqlFunction("ST_Distance")
-    val DistanceSphere = new SqlFunction("ST_DistanceSphere")
-    val DistanceSphere0 = new SqlFunction("ST_Distance_Sphere")
-    val DistanceSpheroid = new SqlFunction("ST_DistanceSpheroid")
-    val DistanceSpheroid0 = new SqlFunction("ST_Distance_Spheroid")
+    val DistanceSphere = new SqlFunction("ST_Distance_Sphere")
     val MaxDistance = new SqlFunction("ST_MaxDistance")
     val HausdorffDistance = new SqlFunction("ST_HausdorffDistance")
     val LongestLine = new SqlFunction("ST_LongestLine")

@@ -26,9 +26,9 @@ trait MySQLCommonJdbcTypes extends JdbcTypesComponent { driver: MySQLProfile =>
       if (r.wasNull) null.asInstanceOf[T] else fnFromString(value)
     }
 
-    override def setValue(v: T, p: PreparedStatement, idx: Int): Unit = p.setObject(idx, toStr(v), java.sql.Types.OTHER)
+    override def setValue(v: T, p: PreparedStatement, idx: Int): Unit = p.setObject(idx, toStr(v), sqlType)
 
-    override def updateValue(v: T, r: ResultSet, idx: Int): Unit = r.updateObject(idx, toStr(v), java.sql.Types.OTHER)
+    override def updateValue(v: T, r: ResultSet, idx: Int): Unit = r.updateObject(idx, toStr(v), sqlType)
 
     override def valueToSQLLiteral(v: T) = if(v == null) "NULL" else s"'${fnToString(v)}'"
 

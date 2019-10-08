@@ -85,7 +85,6 @@ trait MySQLSpatialSupport extends MySQLSpatialExtension {
     override def sqlTypeName(sym: Option[FieldSymbol]): String = "geometry"
 
     override def getValue(r: ResultSet, idx: Int): T = {
-
       val geoInWkb = r.getBytes(idx)
       if (r.wasNull()) null.asInstanceOf[T]
       else fromBytes(geoInWkb)
@@ -99,7 +98,7 @@ trait MySQLSpatialSupport extends MySQLSpatialExtension {
       r.updateBytes(idx, toBytes(v))
     }
 
-    override def hasLiteralForm: Boolean = true
+    override def hasLiteralForm: Boolean = false
 
     override def valueToSQLLiteral(v: T) = {
       if (v eq null) "NULL" else s"'${toLiteral(v)}'"
