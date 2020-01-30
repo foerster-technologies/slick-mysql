@@ -2,11 +2,11 @@ package com.foerstertechnologies.slickmysql.json
 
 import slick.ast.Library.{SqlFunction, SqlOperator}
 import slick.ast.TypedType
-import slick.jdbc.{JdbcType, JdbcTypesComponent, MySQLProfile}
+import slick.jdbc.{JdbcProfile, JdbcType, JdbcTypesComponent, MySQLProfile}
 import slick.lifted.ExtensionMethods
 
-trait MySQLJsonExtension extends JdbcTypesComponent { mySQLProfile: MySQLProfile =>
-  import mySQLProfile.api._
+trait MySQLJsonExtension extends JdbcTypesComponent { self: MySQLProfile =>
+  import self.api._
 
   class JsonLibrary(pgjson: String) {
     val Arrow  = new SqlOperator("->")

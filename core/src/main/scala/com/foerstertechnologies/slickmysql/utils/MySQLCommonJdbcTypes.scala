@@ -5,12 +5,12 @@ import slick.ast.FieldSymbol
 import scala.reflect.ClassTag
 import java.sql.{PreparedStatement, ResultSet}
 
-import slick.jdbc.{JdbcTypesComponent, MySQLProfile}
+import slick.jdbc.{JdbcProfile, JdbcTypesComponent, MySQLProfile}
 
 /**
   * @
   */
-trait MySQLCommonJdbcTypes extends JdbcTypesComponent { driver: MySQLProfile =>
+trait MySQLCommonJdbcTypes extends JdbcTypesComponent { self: MySQLProfile =>
 
   class GenericJdbcType[T](val sqlTypeName: String,
                            fnFromString: (String => T),

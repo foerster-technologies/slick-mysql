@@ -2,10 +2,10 @@ lazy val commonSettings = Seq(
   organizationName := "foerster technologies",
   organization := "com.foerster-technologies",
   name := "slick-mysql",
-  version := "0.3.1-SNAPSHOT",
+  version := "0.6.0-SNAPSHOT",
 
-  scalaVersion := "2.12.8",
-  crossScalaVersions := Seq("2.12.8", "2.11.12"),
+  scalaVersion := "2.13.1",
+  crossScalaVersions := Seq("2.12.8", "2.13.1"),
   scalacOptions ++= Seq("-deprecation",
     "-feature",
     "-language:implicitConversions",
@@ -16,8 +16,8 @@ lazy val commonSettings = Seq(
 
   resolvers += Resolver.mavenLocal,
   resolvers += Resolver.sonatypeRepo("snapshots"),
-  resolvers += "Typesafe repository" at "http://repo.typesafe.com/typesafe/releases/",
-  resolvers += "spray" at "http://repo.spray.io/",
+  resolvers += "Typesafe repository" at "https://repo.typesafe.com/typesafe/releases/",
+  resolvers += "spray" at "https://repo.spray.io/",
   publishTo := {
     val nexus = "https://oss.sonatype.org/"
     if (version.value.trim.endsWith("SNAPSHOT"))
@@ -28,7 +28,7 @@ lazy val commonSettings = Seq(
   publishMavenStyle := true,
   publishArtifact in Test := false,
   pomIncludeRepository := { _ => false },
-  makePomConfiguration ~= { _.copy(configurations = Some(Seq(Compile, Runtime, Optional))) },
+  // makePomConfiguration := makePomConfiguration.value. // ~= { _.(configurations = Some(Seq(Compile, Runtime, Optional))) },
   pomExtra :=
     <url>https://github.com/foerster-technologies/slick-mysql</url>
       <licenses>
@@ -51,44 +51,62 @@ lazy val commonSettings = Seq(
       </developers>
 )
 
-def mainDependencies(scalaVersion: String) = {
-  val extractedLibs = CrossVersion.partialVersion(scalaVersion) match {
-    case Some((2, scalaMajor)) if scalaMajor >= 11 =>
-      Seq("org.scala-lang.modules" %% "scala-parser-combinators" % "1.1.0" % "provided")
-    case _ =>
-      Seq()
-  }
-  Seq (
-    "org.scala-lang" % "scala-reflect" % scalaVersion,
-    "com.typesafe.slick" %% "slick" % "3.3.1",
-    "org.slf4j" % "slf4j-simple" % "1.7.26" % "provided",
-    "org.scalatest" %% "scalatest" % "3.0.4" % "test"
-  ) ++ extractedLibs
-}
-
-lazy val slickMySQLCore = Project(id = "slick-mysql_core", base = file("./core"),
-  settings = Defaults.coreDefaultSettings ++ commonSettings ++ Seq(
-    name := "slick-mysql_core",
-    description := "Slick extensions for MySQL - Core",
-    libraryDependencies := mainDependencies(scalaVersion.value)
-  )
+def mainDependencies(scalaVersion: String) = Seq (
+  "org.scala-lang" % "scala-reflect" % scalaVersion,
+  "com.typesafe.slick" %% "slick" % "3.3.2",
+  "org.slf4j" % "slf4j-simple" % "1.7.26" % "provided",
+  "org.scala-lang.modules" %% "scala-parser-combinators" % "1.1.2" % "provided",
+  "org.scalatest" %% "scalatest" % "3.1.0" % "test"
 )
 
-lazy val slickMySQLProject = Project(id = "slick-mysql", base = file("."),
-  settings = Defaults.coreDefaultSettings ++ commonSettings ++ Seq(
-    name := "slick-mysql",
-    description := "Slick extensions for MySQL",
-    libraryDependencies := mainDependencies(scalaVersion.value)
-  )
-).dependsOn (slickMySQLCore)
-  .aggregate (slickMySQLCore, slickMySQLJts)
-
-lazy val slickMySQLJts = Project(id = "slick-mysql_jts", base = file("./addons/jts"),
-  settings = Defaults.coreDefaultSettings ++ commonSettings ++ Seq(
-    name := "slick-mysql_jts",
-    description := "Slick extensions for MySQL - jts module",
-    libraryDependencies := mainDependencies(scalaVersion.value) ++ Seq(
-      "org.locationtech.jts" % "jts-core" % "1.16.1"
+lazy val slickMySQLCore = (project in file("./core"))
+  .settings(
+    Defaults.coreDefaultSettings ++ commonSettings ++ Seq(
+      name := "slick-mysql_core",
+      description := "Slick extensions for MySQL - Core",
+      libraryDependencies := mainDependencies(scalaVersion.value)
     )
   )
-).dependsOn (slickMySQLCore)
+
+lazy val slickMySQLProject = (project in file("."))
+  .settings(
+    Defaults.coreDefaultSettings ++ commonSettings ++ Seq(
+      name := "slick-mysql",
+      description := "Slick extensions for MySQL",
+      libraryDependencies := mainDependencies(scalaVersion.value)
+    )
+  ).dependsOn(slickMySQLCore)
+  .aggregate(slickMySQLCore, slickMySQLJts, slickMySQLPlayJson, slickMySQLJodaMoney)
+
+lazy val slickMySQLJts = (project in file("./addons/jts"))
+  .settings(
+    Defaults.coreDefaultSettings ++ commonSettings ++ Seq(
+      name := "slick-mysql_jts",
+      description := "Slick extensions for MySQL - jts module",
+      libraryDependencies := mainDependencies(scalaVersion.value) ++ Seq(
+        "org.locationtech.jts" % "jts-core" % "1.16.1"
+      )
+    )
+  ).dependsOn(slickMySQLCore)
+
+lazy val slickMySQLPlayJson = (project in file("./addons/play-json"))
+  .settings(
+      Defaults.coreDefaultSettings ++ commonSettings ++ Seq(
+        name := "slick-mysql_play-json",
+        description := "Slick extensions for MySQL - play-json module",
+        libraryDependencies := mainDependencies(scalaVersion.value) ++ Seq(
+          "com.typesafe.play" %% "play-json" % "2.8.1"
+      )
+    )
+  ).dependsOn(slickMySQLCore)
+
+lazy val slickMySQLJodaMoney = (project in file("./addons/joda-money"))
+  .settings(
+    Defaults.coreDefaultSettings ++ commonSettings ++ Seq(
+      name := "slick-mysql_joda-money",
+      description := "Slick extensions for MySQL - joda-money module",
+      libraryDependencies := mainDependencies(scalaVersion.value) ++ Seq(
+        "org.joda" % "joda-money" % "1.0.1"
+      )
+    )
+  ).dependsOn(slickMySQLCore)

@@ -7,7 +7,7 @@ import slick.lifted.Query
 import slick.relational.{CompiledMapping, ProductResultConverter, ResultConverter, TypeMappingResultConverter}
 import slick.util.{ProductWrapper, SQLBuilder}
 
-trait PatchActionExtensionMethodsSupport { profile: JdbcProfile =>
+trait PatchActionExtensionMethodsSupport { self: MySQLProfile =>
 
   trait PatchActionImplicits {
     implicit def queryPatchActionExtensionMethods[U <: Product, C[_]](

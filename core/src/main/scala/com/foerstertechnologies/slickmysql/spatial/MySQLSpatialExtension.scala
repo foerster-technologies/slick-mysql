@@ -2,14 +2,13 @@ package com.foerstertechnologies.slickmysql.spatial
 
 import slick.ast.Library.{SqlFunction, SqlOperator}
 import slick.ast.{LiteralNode, TypedType}
-import slick.jdbc.{JdbcType, JdbcTypesComponent, MySQLProfile}
+import slick.jdbc.{JdbcProfile, JdbcType, JdbcTypesComponent, MySQLProfile}
 import slick.lifted.FunctionSymbolExtensionMethods._
 import slick.lifted._
 
-trait MySQLSpatialExtension extends JdbcTypesComponent {
-  mySQLProfile: MySQLProfile =>
+trait MySQLSpatialExtension extends JdbcTypesComponent { self: MySQLProfile =>
 
-  import mySQLProfile.api._
+  import self.api._
 
   trait BaseMySQLSpatialAssistence[GEOMETRY, POINT <: GEOMETRY, LINESTRING <: GEOMETRY, POLYGON <: GEOMETRY, GEOMETRYCOLLECTION <: GEOMETRY] {
     /** Geometry Constructors */

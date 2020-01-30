@@ -4,29 +4,41 @@ Slick extensions for MySQL8
 This package is heavly based on 
 [slick-pg](https://github.com/tminglei/slick-pg) which brings addional support for different data structures to slick.
 
-Currently the package supports only [Spatial Data Types](https://dev.mysql.com/doc/refman/8.0/en/spatial-types.html) features that came along with MySQL 8.
+Currently the package supports
+ * [Spatial Data Types](https://dev.mysql.com/doc/refman/8.0/en/spatial-types.html) features that came along with MySQL 8.
+ * Play Json values
 
-This package is working with `org.locationtech.jts » jts-core` instead of `com.vividsolutions » jts-core`
 
-It also in an unstable state right now.
-Only read/writes of `Point` has been validated. 
+# Spatial extension
+This package is working with `org.locationtech.jts » jts-core` instead of `com.vividsolutions » jts-core` 
 
 ## Installation
 
+Play 2.7 / Scala 2.11 or 2.12
 ```
-libraryDependencies += "com.foerster-technologies" %% "slick-mysql"            % "0.1.0-SNAPSHOT
+libraryDependencies += "com.foerster-technologies" %% "slick-mysql" % "0.6.0-SNAPSHOT
+```
+
+Play 2.8 / Scala 2.12 or 2.13
+```
+libraryDependencies += "com.foerster-technologies" %% "slick-mysql" % "0.6.0-SNAPSHOT
 ```
 
 ### Addons
 
 > JTS Support
 ```
-libraryDependencies += "com.foerster-technologies" %% "slick-mysql_jts"        % "0.1.0-SNAPSHOT
+libraryDependencies += "com.foerster-technologies" %% "slick-mysql_jts" % "0.6.0-SNAPSHOT
+```
+
+> Play Json
+```
+libraryDependencies += "com.foerster-technologies" %% "slick-mysql_play-json" % "0.6.0-SNAPSHOT
 ```
 
 ## Usage
 
-### (Optional) Create your own Slick-Profile
+### Create your own Slick-Profile
 this example includes the slick mysql profile with the spatial extension
 ```
 package your.package
@@ -53,10 +65,6 @@ For slick play: Set your own profile in your config
 slick.dbs.default.profile = "your.package.MySQLSpatialProfile$"
 ```
 
-or use the provided JTS profile
-```
-slick.dbs.default.profile = "com.foerstertechnologies.slickmysql.MySQLSpatialProfile$"
-```
 
 ### In your code
 

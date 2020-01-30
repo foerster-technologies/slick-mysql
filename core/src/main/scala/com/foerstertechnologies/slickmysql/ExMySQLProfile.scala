@@ -14,7 +14,7 @@ import slick.util.Logging
 import scala.concurrent.ExecutionContext
 import scala.reflect.{ClassTag, classTag}
 
-trait ExMySQLProfile extends JdbcProfile with MySQLProfile with Logging { driver =>
+trait ExMySQLProfile extends JdbcProfile with MySQLProfile with Logging { self =>
 
   override def createQueryBuilder(n: Node, state: CompilerState): QueryBuilder = new QueryBuilder(n, state)
   override def createUpsertBuilder(node: Insert): InsertBuilder =
@@ -31,7 +31,7 @@ trait ExMySQLProfile extends JdbcProfile with MySQLProfile with Logging { driver
 
   ///--
   trait API extends super.API {
-    type InheritingTable = driver.InheritingTable
+    type InheritingTable = self.InheritingTable
 
     /*
     val Over = window.Over()

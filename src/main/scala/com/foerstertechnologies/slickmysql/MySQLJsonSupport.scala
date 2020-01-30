@@ -1,6 +1,7 @@
 package com.foerstertechnologies.slickmysql
 
-import slick.jdbc.{JdbcType, MySQLProfile, PositionedResult}
+import slick.jdbc.{JdbcProfile, JdbcType, MySQLProfile, PositionedResult}
+
 import scala.reflect.classTag
 
 /** simple json string wrapper */
@@ -9,9 +10,9 @@ case class JsonString(value: String)
 /**
  * simple json support; if all you want is just getting from / saving to db, and using json operations/methods, it should be enough
  */
-trait MySQLJsonSupport extends json.MySQLJsonExtension with utils.MySQLCommonJdbcTypes { myProfile: MySQLProfile =>
+trait MySQLJsonSupport extends json.MySQLJsonExtension with utils.MySQLCommonJdbcTypes { self: MySQLProfile =>
 
-  import myProfile.api._
+  import self.api._
 
   ///---
   val json = "json"
@@ -19,9 +20,9 @@ trait MySQLJsonSupport extends json.MySQLJsonExtension with utils.MySQLCommonJdb
 
   trait SimpleJsonCodeGenSupport {
     // register types to let `ExModelBuilder` find them
-    if (myProfile.isInstanceOf[ExMySQLProfile]) {
-      myProfile.asInstanceOf[ExMySQLProfile].bindMySQLTypeToScala("json", classTag[JsonString])
-      myProfile.asInstanceOf[ExMySQLProfile].bindMySQLTypeToScala("jsonb", classTag[JsonString])
+    if (self.isInstanceOf[ExMySQLProfile]) {
+      self.asInstanceOf[ExMySQLProfile].bindMySQLTypeToScala("json", classTag[JsonString])
+      self.asInstanceOf[ExMySQLProfile].bindMySQLTypeToScala("jsonb", classTag[JsonString])
     }
   }
 

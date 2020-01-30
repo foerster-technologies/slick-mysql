@@ -9,15 +9,14 @@ import slick.jdbc._
 
 import scala.reflect.{ClassTag, classTag}
 
-trait MySQLSpatialSupport extends MySQLSpatialExtension {
-  driver: MySQLProfile =>
+trait MySQLSpatialSupport extends MySQLSpatialExtension { self: MySQLProfile =>
 
-  import driver.api._
+  import self.api._
 
   trait MySQLSpatialCodeGenSupport {
     // register types to let `ExMMySQLBuilder` find them
-    if (driver.isInstanceOf[ExMySQLProfile]) {
-      driver.asInstanceOf[ExMySQLProfile].bindMySQLTypeToScala("geometry", classTag[Geometry])
+    if (self.isInstanceOf[ExMySQLProfile]) {
+      self.asInstanceOf[ExMySQLProfile].bindMySQLTypeToScala("geometry", classTag[Geometry])
     }
   }
 
