@@ -4,8 +4,8 @@ lazy val commonSettings = Seq(
   name := "slick-mysql",
   version := "0.6.0-SNAPSHOT",
 
-  scalaVersion := "2.13.1",
-  crossScalaVersions := Seq("2.12.8", "2.13.1"),
+  scalaVersion := "2.13.2",
+  crossScalaVersions := Seq("2.12.8", "2.13.2"),
   scalacOptions ++= Seq("-deprecation",
     "-feature",
     "-language:implicitConversions",
@@ -54,9 +54,9 @@ lazy val commonSettings = Seq(
 def mainDependencies(scalaVersion: String) = Seq (
   "org.scala-lang" % "scala-reflect" % scalaVersion,
   "com.typesafe.slick" %% "slick" % "3.3.2",
-  "org.slf4j" % "slf4j-simple" % "1.7.26" % "provided",
+  "org.slf4j" % "slf4j-simple" % "1.7.30" % "provided",
   "org.scala-lang.modules" %% "scala-parser-combinators" % "1.1.2" % "provided",
-  "org.scalatest" %% "scalatest" % "3.1.0" % "test"
+  "org.scalatest" %% "scalatest" % "3.1.1" % "test"
 )
 
 lazy val slickMySQLCore = (project in file("./core"))
@@ -76,7 +76,7 @@ lazy val slickMySQLProject = (project in file("."))
       libraryDependencies := mainDependencies(scalaVersion.value)
     )
   ).dependsOn(slickMySQLCore)
-  .aggregate(slickMySQLCore, slickMySQLJts, slickMySQLPlayJson, slickMySQLJodaMoney)
+  .aggregate(slickMySQLCore, slickMySQLJts, slickMySQLPlayJson, slickMySQLCirceJson, slickMySQLJodaMoney)
 
 lazy val slickMySQLJts = (project in file("./addons/jts"))
   .settings(
@@ -97,6 +97,22 @@ lazy val slickMySQLPlayJson = (project in file("./addons/play-json"))
         libraryDependencies := mainDependencies(scalaVersion.value) ++ Seq(
           "com.typesafe.play" %% "play-json" % "2.8.1"
       )
+    )
+  ).dependsOn(slickMySQLCore)
+
+lazy val circeVersion = "0.13.0"
+
+lazy val slickMySQLCirceJson = (project in file("./addons/circe-json"))
+  .settings(
+    Defaults.coreDefaultSettings ++ commonSettings ++ Seq(
+      name := "slick-mysql_circe-json",
+      description := "Slick extensions for MySQL - circe-json module",
+      libraryDependencies := mainDependencies(scalaVersion.value) ++ Seq(
+        "io.circe" %% "circe-core",
+        "io.circe" %% "circe-generic",
+        "io.circe" %% "circe-parser",
+        "io.circe" %% "circe-literal"
+      ).map(_ % circeVersion),
     )
   ).dependsOn(slickMySQLCore)
 
