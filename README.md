@@ -4,36 +4,57 @@ Slick extensions for MySQL8
 This package is heavly based on 
 [slick-pg](https://github.com/tminglei/slick-pg) which brings addional support for different data structures to slick.
 
-Currently the package supports
- * [Spatial Data Types](https://dev.mysql.com/doc/refman/8.0/en/spatial-types.html) features that came along with MySQL 8.
- * Play Json values
+Currently this package supports:
 
+Json
+ * [Circle Json](https://circe.github.io/circe/)
+ * [Play Json](https://github.com/playframework/play-json)
+
+Spatial
+ * [Spatial Data Types](https://dev.mysql.com/doc/refman/8.0/en/spatial-types.html) features that came along with MySQL 8.
+ * [JTS](https://github.com/locationtech/jts)
+
+Money
+* [Joda Money](https://www.joda.org/joda-money/)
 
 # Spatial extension
 This package is working with `org.locationtech.jts » jts-core` instead of `com.vividsolutions » jts-core` 
 
 ## Installation
 
-Play 2.7 / Scala 2.11 or 2.12
+Play 2.8
 ```
-libraryDependencies += "com.foerster-technologies" %% "slick-mysql" % "0.6.0-SNAPSHOT
-```
-
-Play 2.8 / Scala 2.12 or 2.13
-```
-libraryDependencies += "com.foerster-technologies" %% "slick-mysql" % "0.6.0-SNAPSHOT
+libraryDependencies += "com.foerster-technologies" %% "slick-mysql" % "1.0.0"
 ```
 
 ### Addons
 
+> Circle Json (version 0.13.0)
+```
+libraryDependencies += "com.foerster-technologies" %% "slick-circle-json" % "1.0.0"
+```
+
 > JTS Support
 ```
-libraryDependencies += "com.foerster-technologies" %% "slick-mysql_jts" % "0.6.0-SNAPSHOT
+libraryDependencies += "com.foerster-technologies" %% "slick-mysql_jts" % "1.0.0"
+```
+
+> Joda Money
+```
+libraryDependencies += "com.foerster-technologies" %% "slick-mysql_joda-money" % "1.0.0"
+```
+is still under development and very minimal.
+* Has a default currency (EUR)
+* No currency field supported, only amount
+
+> JTS Support
+```
+libraryDependencies += "com.foerster-technologies" %% "slick-mysql_jts" % "1.0.0"
 ```
 
 > Play Json
 ```
-libraryDependencies += "com.foerster-technologies" %% "slick-mysql_play-json" % "0.6.0-SNAPSHOT
+libraryDependencies += "com.foerster-technologies" %% "slick-mysql_play-json" % "1.0.0"
 ```
 
 ## Usage
@@ -97,6 +118,12 @@ trait MyTestClass extends HasDatabaseConfigProvider[MySQLSpatialProfile]
 
 ## Documentation
 
-### Stored SRID Values
+### JTS
+#### Stored SRID Values
 The Geometry values are stored and loaded with the given SRID.   
-So make sure to add SRID to your value when you save it.
+Make sure to add SRID to your value when you save it.
+Otherwise SRID 0 will be used as default value by mysql.
+ For computations on multiple geometry values, all values must have the same SRID or an error occurs. 
+
+## Credits
+* [rleibman](https://github.com/rleibman) for adding circle-json support

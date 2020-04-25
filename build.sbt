@@ -1,11 +1,14 @@
+lazy val scala212 = "2.12.8"
+lazy val scala213 = "2.13.2"
+
 lazy val commonSettings = Seq(
   organizationName := "foerster technologies",
   organization := "com.foerster-technologies",
   name := "slick-mysql",
-  version := "0.6.0-SNAPSHOT",
+  version := "1.0.0",
 
-  scalaVersion := "2.13.2",
-  crossScalaVersions := Seq("2.12.8", "2.13.2"),
+  scalaVersion := scala213,
+  crossScalaVersions := List(scala212, scala213),
   scalacOptions ++= Seq("-deprecation",
     "-feature",
     "-language:implicitConversions",
@@ -25,6 +28,7 @@ lazy val commonSettings = Seq(
     else
       Some("releases" at nexus + "service/local/staging/deploy/maven2")
   },
+  publishConfiguration := publishConfiguration.value.withOverwrite(true),
   publishMavenStyle := true,
   publishArtifact in Test := false,
   pomIncludeRepository := { _ => false },

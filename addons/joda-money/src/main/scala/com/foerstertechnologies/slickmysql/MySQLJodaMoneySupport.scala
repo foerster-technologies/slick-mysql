@@ -7,7 +7,7 @@ import org.joda.money.{CurrencyUnit, Money}
 import slick.ast.NumericTypedType
 import slick.jdbc._
 
-import scala.reflect.{ClassTag, classTag}
+import scala.reflect.classTag
 
 trait MySQLJodaMoneySupport extends money.MySQLMoneyExtension with utils.MySQLCommonJdbcTypes { self: MySQLProfile =>
 
@@ -16,7 +16,7 @@ trait MySQLJodaMoneySupport extends money.MySQLMoneyExtension with utils.MySQLCo
   val defaultCurrencyUnit: CurrencyUnit = CurrencyUnit.EUR
 
   trait JodaMoneyCodegenSupport {
-    // register types to let `ExMMySQLBuilder` find them
+    // register types to let `ExMyMySQLBuilder` find them
     if (self.isInstanceOf[ExMySQLProfile]) {
       self.asInstanceOf[ExMySQLProfile].bindMySQLTypeToScala("money", classTag[Money])
     }

@@ -65,7 +65,7 @@ trait PatchActionExtensionMethodsSupport { self: MySQLProfile =>
       val newValue: Product = new ProductWrapper(products)
       val newSql = sres.sql match {
         case updateQuerySplitRegExp(prefix, setter, suffix) =>
-          val buffer = StringBuilder.newBuilder
+          val buffer = new StringBuilder()
           buffer.append(prefix)
           buffer.append(
             updateQuerySetterRegExp
