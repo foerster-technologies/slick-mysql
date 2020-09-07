@@ -1,11 +1,11 @@
 lazy val scala212 = "2.12.8"
-lazy val scala213 = "2.13.2"
+lazy val scala213 = "2.13.3"
 
 lazy val commonSettings = Seq(
   organizationName := "foerster technologies",
   organization := "com.foerster-technologies",
   name := "slick-mysql",
-  version := "1.0.0",
+  version := "1.1.0",
 
   scalaVersion := scala213,
   crossScalaVersions := List(scala212, scala213),
@@ -35,24 +35,27 @@ lazy val commonSettings = Seq(
   // makePomConfiguration := makePomConfiguration.value. // ~= { _.(configurations = Some(Seq(Compile, Runtime, Optional))) },
   pomExtra :=
     <url>https://github.com/foerster-technologies/slick-mysql</url>
-      <licenses>
-        <license>
-          <name>BSD-style</name>
-          <url>http://www.opensource.org/licenses/bsd-license.php</url>
-          <distribution>repo</distribution>
-        </license>
-      </licenses>
-      <scm>
-        <url>git@github.com:foerster-technologies/slick-mysql.git</url>
-        <connection>scm:git:git@github.com:foerster-technologies/slick-mysql.git</connection>
-      </scm>
-      <developers>
-        <developer>
-          <id>TimFoerster</id>
-          <name>Tim Förster</name>
-          <timezone>+1</timezone>
-        </developer>
-      </developers>
+    <licenses>
+      <license>
+        <name>BSD-style</name>
+        <url>http://www.opensource.org/licenses/bsd-license.php</url>
+        <distribution>repo</distribution>
+      </license>
+    </licenses>
+    <scm>
+      <url>git@github.com:foerster-technologies/slick-mysql.git</url>
+      <connection>scm:git:git@github.com:foerster-technologies/slick-mysql.git</connection>
+    </scm>
+    <developers>
+      <developer>
+        <id>TimFoerster</id>
+        <name>Tim Förster</name>
+        <email>tim@foerster-technologies.com</email>
+        <organization>foerster technologies GmbH</organization>
+        <organizationUrl>https://www.foerster-technologies.com</organizationUrl>
+        <timezone>+1</timezone>
+      </developer>
+    </developers>
 )
 
 def mainDependencies(scalaVersion: String) = Seq (

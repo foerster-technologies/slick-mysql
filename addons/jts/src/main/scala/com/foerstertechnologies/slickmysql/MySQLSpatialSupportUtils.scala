@@ -21,13 +21,17 @@ object MySQLSpatialSupportUtils {
 
   def fromLiteral[T](value: String): T = {
 
-    if (wktReaderHolder.get == null) wktReaderHolder.set(new WKTReader())
     splitRSIDAndWKT(value) match {
       case (srid, wkt) =>
         val geom =
-          if (wkt.startsWith("00") || wkt.startsWith("01"))
+          if (wkt.startsWith("00") || wkt.startsWith("01")) {
+            if (wkbReaderHolder.get == null) wkbReaderHolder.set(new WKBReader())
             fromBytes(WKBReader.hexToBytes(wkt))
-          else wktReaderHolder.get.read(wkt)
+          } else {
+            if (wktReaderHolder.get == null) wktReaderHolder.set(new WKTReader())
+
+            wktReaderHolder.get.read(wkt)
+          }
 
         if (srid != -1) geom.setSRID(srid)
         geom.asInstanceOf[T]
@@ -35,11 +39,15 @@ object MySQLSpatialSupportUtils {
     }
   }
 
+  def geometryFromWkb[T](wkbReader: ThreadLocal[WKBReader], bytes: Array[Byte]): T = {
+    wkbReader.get.read(bytes).asInstanceOf[T]
+  }
+
   def fromBytes[T](bytes: Array[Byte]): T = {
     // MySQL stores geometry values using 4 bytes to indicate the SRID followed by the WKB representation of the value.
     // https://dev.mysql.com/doc/refman/8.0/en/storage-requirements.html
     if (wkbReaderHolder.get == null) wkbReaderHolder.set(new WKBReader(new GeometryFactory(new PrecisionModel, ByteBuffer.wrap(bytes.take(4)).getInt)))
-    wkbReaderHolder.get.read(bytes.drop(4)).asInstanceOf[T]
+    geometryFromWkb(wkbReaderHolder, bytes.drop(4))
   }
 
   private def splitRSIDAndWKT(value: String): (Int, String) = {

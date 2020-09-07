@@ -16,22 +16,23 @@ import scala.reflect.{ClassTag, classTag}
 
 trait ExMySQLProfile extends JdbcProfile with MySQLProfile with Logging { self =>
 
+  /*
   override def createQueryBuilder(n: Node, state: CompilerState): QueryBuilder = new QueryBuilder(n, state)
   override def createUpsertBuilder(node: Insert): InsertBuilder =
     if (useNativeUpsert) new NativeUpsertBuilder(node) else new super.UpsertBuilder(node)
   override def createTableDDLBuilder(table: Table[_]): TableDDLBuilder = new TableDDLBuilder(table)
   override def createModelBuilder(tables: Seq[MTable], ignoreInvalidDefaults: Boolean)(implicit ec: ExecutionContext): JdbcModelBuilder =
     new ExModelBuilder(tables, ignoreInvalidDefaults)
-
+*/
   protected lazy val useNativeUpsert = capabilities contains JdbcCapabilities.insertOrUpdate
-  override protected lazy val useTransactionForUpsert = !useNativeUpsert
-  override protected lazy val useServerSideUpsertReturning = useNativeUpsert
+  // override protected lazy val useTransactionForUpsert = !useNativeUpsert
+  // override protected lazy val useServerSideUpsertReturning = useNativeUpsert
 
   override val api: API = new API {}
 
   ///--
   trait API extends super.API {
-    type InheritingTable = self.InheritingTable
+    // type InheritingTable = self.InheritingTable
 
     /*
     val Over = window.Over()
@@ -42,10 +43,14 @@ trait ExMySQLProfile extends JdbcProfile with MySQLProfile with Logging { self =
     }
     */
     ///
+    /*
     implicit def multiUpsertExtensionMethods[U, C[_]](q: Query[_, U, C]): InsertActionComposerImpl[U] =
       new InsertActionComposerImpl[U](compileInsert(q.toNode))
+
+     */
   }
 
+  /*
   trait ByteaPlainImplicits {
     /** NOTE: Array[Byte] maps to `bytea` instead of `byte ARRAY` */
     implicit val getByteArray = new GetResult[Array[Byte]] {
@@ -60,7 +65,7 @@ trait ExMySQLProfile extends JdbcProfile with MySQLProfile with Logging { self =
     implicit val setByteArrayOption = new SetParameter[Option[Array[Byte]]] {
       def apply(v: Option[Array[Byte]], pp: PositionedParameters) = pp.setBytesOption(v)
     }
-  }
+  }*/
 
   /*************************************************************************
     *                 for aggregate and window function support
@@ -100,6 +105,7 @@ trait ExMySQLProfile extends JdbcProfile with MySQLProfile with Logging { self =
     *                          for upsert support
     ***********************************************************************/
 
+  /*
   class NativeUpsertBuilder(ins: Insert) extends super.InsertBuilder(ins) {
     /* NOTE: pk defined by using method `primaryKey` and pk defined with `PrimaryKey` can only have one,
              here we let table ddl to help us ensure this. */
@@ -172,7 +178,7 @@ trait ExMySQLProfile extends JdbcProfile with MySQLProfile with Logging { self =
         }
     }
   }
-
+*/
 
   /***********************************************************************
     *                          for codegen support
@@ -193,8 +199,8 @@ trait ExMySQLProfile extends JdbcProfile with MySQLProfile with Logging { self =
   }
 
   {
-    bindMySQLTypeToScala("uuid", classTag[UUID])
-    bindMySQLTypeToScala("text", classTag[String])
+    bindMySQLTypeToScala("binary(16)", classTag[UUID])
+    // bindMySQLTypeToScala("text", classTag[String])
     bindMySQLTypeToScala("bool", classTag[Boolean])
   }
 
@@ -210,6 +216,7 @@ trait ExMySQLProfile extends JdbcProfile with MySQLProfile with Logging { self =
     *                          for inherit support
     ***********************************************************************/
 
+  /*
   trait InheritingTable { sub: Table[_] =>
     val inherited: Table[_]
   }
@@ -241,4 +248,6 @@ trait ExMySQLProfile extends JdbcProfile with MySQLProfile with Logging { self =
       } else super.createTable(checkNotExists)
     }
   }
+
+   */
 }
